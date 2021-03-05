@@ -1,0 +1,5 @@
+[workspace]
+members = [
+  "stacked_client",
+  "stacked_server",
+]
