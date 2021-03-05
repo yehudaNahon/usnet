@@ -210,7 +210,7 @@ impl StcpBackend {
                 let default_v4_gw = Ipv4Address::from_str(gateway).expect("gateway conv");
                 let mut routes = Routes::new(BTreeMap::new());
                 routes.add_default_ipv4_route(default_v4_gw).unwrap();
-                let mut iface = EthernetInterfaceBuilder::new(device)
+                let iface = EthernetInterfaceBuilder::new(device)
                     .ethernet_addr(ethernet_addr)
                     .neighbor_cache(neighbor_cache)
                     .ip_addrs(ip_addrs)
@@ -245,9 +245,10 @@ impl StcpBackend {
                         let device = TapInterface::new_macvtap(&ifname, reduce_mtu_by).unwrap();
                         let fd = device.as_raw_fd();
 
-                        let mut iface = EthernetInterfaceBuilder::new(device)
-                            .ethernet_addr(ethernet_addr)
-                            .neighbor_cache(neighbor_cache);
+                        let iface: EthernetInterfaceBuilder<TapInterface> =
+                            EthernetInterfaceBuilder::new(device)
+                                .ethernet_addr(ethernet_addr)
+                                .neighbor_cache(neighbor_cache);
 
                         let iface = match ipv4 {
                             IpV4::Dhcp => panic!("DHCP not implemented yet in smoltcp"),
@@ -280,7 +281,7 @@ impl StcpBackend {
                         let device = TapInterface::new_macvtap(&interface, reduce_mtu_by).unwrap();
                         let fd = device.as_raw_fd();
 
-                        let mut iface = EthernetInterfaceBuilder::new(device)
+                        let iface = EthernetInterfaceBuilder::new(device)
                             .ethernet_addr(ethernet_addr)
                             .neighbor_cache(neighbor_cache);
 
@@ -334,7 +335,7 @@ impl StcpBackend {
                                 let device = TapInterface::new(&ifname, reduce_mtu_by).unwrap();
                                 let fd = device.as_raw_fd();
 
-                                let mut iface = EthernetInterfaceBuilder::new(device)
+                                let iface = EthernetInterfaceBuilder::new(device)
                                     .ethernet_addr(ethernet_addr)
                                     .neighbor_cache(neighbor_cache);
 
@@ -362,7 +363,7 @@ impl StcpBackend {
                         let device = TapInterface::new(&interface, reduce_mtu_by).unwrap();
                         let fd = device.as_raw_fd();
 
-                        let mut iface = EthernetInterfaceBuilder::new(device)
+                        let iface = EthernetInterfaceBuilder::new(device)
                             .ethernet_addr(ethernet_addr)
                             .neighbor_cache(neighbor_cache);
 
@@ -471,7 +472,7 @@ impl StcpBackend {
                         rand::random::<u64>()
                     );
                     let _ = remove_file(&tmpsckt);
-                    let mut control_uds =
+                    let control_uds =
                         UnixDatagram::bind(tmpsckt).expect("binding tmp socket failed");
                     let payl = serde_json::to_string(&ClientMessage::RequestUDS(
                         parent.to_owned(),
@@ -525,7 +526,7 @@ impl StcpBackend {
                     )
                     .unwrap();
 
-                    let mut iface = EthernetInterfaceBuilder::new(device)
+                    let iface = EthernetInterfaceBuilder::new(device)
                         .ethernet_addr(ethernet_addr)
                         .neighbor_cache(neighbor_cache);
 

@@ -53,11 +53,13 @@ use nix::unistd::{chown, Gid};
 
 use nix::poll::{poll, PollFd, PollFlags};
 
-use std::process::Command;
-
 use std::cell::RefCell;
 use std::env;
-use std::os::unix::io::{AsRawFd, RawFd};
+use std::{
+    os::unix::io::{AsRawFd, RawFd},
+    process::Command,
+};
+
 use std::rc::Rc;
 use std::thread;
 use std::time::Duration;
@@ -86,7 +88,7 @@ extern crate serde_json;
 extern crate lazy_static;
 
 lazy_static! {
-    static ref signal: Arc<AtomicBool> = Arc::new(AtomicBool::new(false));
+    static ref SIGNAL: Arc<AtomicBool> = Arc::new(AtomicBool::new(false));
 }
 
 #[derive(Debug)]
@@ -346,7 +348,6 @@ fn add_static_pipe(
 }
 
 fn get_ip_string(interface: &str) -> (String, u8) {
-    use std::process::Command;
     let ioutput = Command::new("ip")
         .args(&["-4", "a", "show", "dev", interface])
         .output()
@@ -643,7 +644,7 @@ fn pcap_dump() -> Option<Box<PcapSink>> {
 }
 
 #[cfg(not(feature = "pcap"))]
-fn pcap_dump() -> Option<Box<PcapSink>> {
+fn pcap_dump() -> Option<Box<dyn PcapSink>> {
     None
 }
 
@@ -678,7 +679,7 @@ fn cleanup() {
     loop {
         thread::sleep(Duration::from_secs(1));
         counter += 1;
-        let msg = if signal.load(Ordering::SeqCst) {
+        let msg = if SIGNAL.load(Ordering::SeqCst) {
             Some("end")
         } else if counter == 90 {
             counter = 0;
@@ -966,7 +967,7 @@ fn main() {
     }
     // finished processing static configuration
 
-    let s = signal.clone();
+    let s = SIGNAL.clone();
     ctrlc::set_handler(move || {
         s.store(true, Ordering::SeqCst);
     })

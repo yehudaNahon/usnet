@@ -37,7 +37,7 @@ impl Endpoint {
         own_endpoint_index: usize,
         all_devices: &[Rc<RefCell<EndpointOrControl>>],
         zerocopy: bool,
-        pcap_dump: &Option<Box<PcapSink>>,
+        pcap_dump: &Option<Box<dyn PcapSink>>,
         fragmentation_map: &mut HashMap<
             FragmentationKey,
             (PacketInfo, EthernetAddress, EthernetAddress),
@@ -66,7 +66,7 @@ impl Endpoint {
                     Target::Last => self.last_pkt_dst.as_ref().unwrap(),
                 };
                 let mut target_outer = target_ref.borrow_mut();
-                let mut target = target_outer.ept_mut();
+                let target: &mut Endpoint = target_outer.ept_mut();
                 let write_res = if zerocopy && self.dev.is_netmap() && target.dev.is_netmap() {
                     target.dev.zc_forward(&mut self.dev)
                 } else {
@@ -118,7 +118,7 @@ impl Endpoint {
         own_endpoint_index: usize,
         all_devices: &[Rc<RefCell<EndpointOrControl>>],
         zerocopy: bool,
-        pcap_dump: &Option<Box<PcapSink>>,
+        pcap_dump: &Option<Box<dyn PcapSink>>,
         fragmentation_map: &mut HashMap<
             FragmentationKey,
             (PacketInfo, EthernetAddress, EthernetAddress),
