@@ -27,10 +27,10 @@ use std::net::{TcpListener as SystemTcpListener, TcpStream as SystemTcpStream};
 use nix::poll::{poll, PollFd, PollFlags};
 use std::os::raw::c_int;
 
-use device::*;
+use crate::device::*;
 use std::env;
 use std::io::prelude::*;
-use usnetconfig::*;
+use crate::usnetconfig::*;
 
 use rand::{thread_rng, Rng};
 

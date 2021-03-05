@@ -21,7 +21,7 @@ use std::thread::JoinHandle;
 use std::time::{Duration, Instant as StdInstant};
 use std::vec;
 
-use resolve;
+use crate::resolve;
 
 use smoltcp;
 use smoltcp::socket::{
@@ -41,12 +41,12 @@ use nix::sched::{sched_setaffinity, CpuSet};
 use nix::unistd::Pid;
 use std::os::raw::c_int;
 
-use device::*;
+use crate::device::*;
 use rand::{thread_rng, Rng};
 use std::env;
 use std::io::prelude::*;
-use system::read_kernel_local_port_range;
-use usnetconfig::*;
+use crate::system::read_kernel_local_port_range;
+use crate::usnetconfig::*;
 
 use serde_json;
 
@@ -509,7 +509,7 @@ impl StcpNetRef {
                 continue;
             }
 
-            let mut listen_handle;
+            let listen_handle;
             let lolisten;
             {
                 let &(ref stcpnetref, ref _cond) = &*self.r;
@@ -1476,25 +1476,25 @@ impl UdpSocket {
     pub fn write_timeout(&self) -> io::Result<Option<Duration>> {
         Ok(*self.write_timeout.read())
     }
-    pub fn set_broadcast(&self, broadcast: bool) -> io::Result<()> {
+    pub fn set_broadcast(&self, _broadcast: bool) -> io::Result<()> {
         panic!("unimpl")
     }
     pub fn broadcast(&self) -> io::Result<bool> {
         panic!("unimpl")
     }
-    pub fn set_multicast_loop_v4(&self, multicast_loop_v4: bool) -> io::Result<()> {
+    pub fn set_multicast_loop_v4(&self, _multicast_loop_v4: bool) -> io::Result<()> {
         panic!("unimpl")
     }
     pub fn multicast_loop_v4(&self) -> io::Result<bool> {
         panic!("unimpl")
     }
-    pub fn set_multicast_ttl_v4(&self, multicast_ttl_v4: u32) -> io::Result<()> {
+    pub fn set_multicast_ttl_v4(&self, _multicast_ttl_v4: u32) -> io::Result<()> {
         panic!("unimpl")
     }
     pub fn multicast_ttl_v4(&self) -> io::Result<u32> {
         panic!("unimpl")
     }
-    pub fn set_multicast_loop_v6(&self, multicast_loop_v6: bool) -> io::Result<()> {
+    pub fn set_multicast_loop_v6(&self, _multicast_loop_v6: bool) -> io::Result<()> {
         panic!("unimpl")
     }
     pub fn multicast_loop_v6(&self) -> io::Result<bool> {
@@ -1512,16 +1512,16 @@ impl UdpSocket {
     pub fn ttl(&self) -> io::Result<u32> {
         self.lo.ttl()
     }
-    pub fn join_multicast_v4(&self, multiaddr: &Ipv4Addr, interface: &Ipv4Addr) -> io::Result<()> {
+    pub fn join_multicast_v4(&self, _multiaddr: &Ipv4Addr, _interface: &Ipv4Addr) -> io::Result<()> {
         panic!("unimpl")
     }
-    pub fn join_multicast_v6(&self, multiaddr: &Ipv6Addr, interface: u32) -> io::Result<()> {
+    pub fn join_multicast_v6(&self, _multiaddr: &Ipv6Addr, _interface: u32) -> io::Result<()> {
         panic!("unimpl")
     }
-    pub fn leave_multicast_v4(&self, multiaddr: &Ipv4Addr, interface: &Ipv4Addr) -> io::Result<()> {
+    pub fn leave_multicast_v4(&self, _multiaddr: &Ipv4Addr, _interface: &Ipv4Addr) -> io::Result<()> {
         panic!("unimpl")
     }
-    pub fn leave_multicast_v6(&self, multiaddr: &Ipv6Addr, interface: u32) -> io::Result<()> {
+    pub fn leave_multicast_v6(&self, _multiaddr: &Ipv6Addr, _interface: u32) -> io::Result<()> {
         panic!("unimpl")
     }
     pub fn take_error(&self) -> io::Result<Option<io::Error>> {

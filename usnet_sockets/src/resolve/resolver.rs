@@ -1,6 +1,6 @@
 //! High-level resolver operations
 
-use apimultithread::UsnetToSocketAddrs;
+use crate::apimultithread::UsnetToSocketAddrs;
 use std::cell::Cell;
 use std::io;
 use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr};
@@ -26,14 +26,14 @@ impl DnsResolver {
     /// Constructs a `DnsResolver` using the given configuration.
     pub fn new(config: DnsConfig) -> io::Result<DnsResolver> {
         let bind = bind_addr(&config.name_servers);
-        let sock = try!(DnsSocket::bind((bind, 0)));
+        let sock = r#try!(DnsSocket::bind((bind, 0)));
         DnsResolver::with_sock(sock, config)
     }
 
     /// Constructs a `DnsResolver` using the given configuration and bound
     /// to the given address.
     pub fn bind<A: UsnetToSocketAddrs>(addr: A, config: DnsConfig) -> io::Result<DnsResolver> {
-        let sock = try!(DnsSocket::bind(addr));
+        let sock = r#try!(DnsSocket::bind(addr));
         DnsResolver::with_sock(sock, config)
     }
 
@@ -57,11 +57,11 @@ impl DnsResolver {
             ));
 
             let mut buf = [0; MESSAGE_LIMIT];
-            let msg = try!(self.send_message(&out_msg, &mut buf));
+            let msg = r#try!(self.send_message(&out_msg, &mut buf));
 
             for rr in msg.answer.into_iter() {
                 if rr.r_type == RecordType::Ptr {
-                    let ptr = try!(rr.read_rdata::<Ptr>());
+                    let ptr = r#try!(rr.read_rdata::<Ptr>());
                     let mut name = ptr.name;
                     if name.ends_with('.') {
                         name.pop();
@@ -131,13 +131,13 @@ impl DnsResolver {
                 .push(Question::new(name.to_owned(), r_ty, Class::Internet));
 
             let mut buf = [0; MESSAGE_LIMIT];
-            let reply = try!(self.send_message(&msg, &mut buf));
+            let reply = r#try!(self.send_message(&msg, &mut buf));
 
             let mut rec = Vec::new();
 
             for rr in reply.answer.into_iter() {
                 if rr.r_type == r_ty {
-                    rec.push(try!(rr.read_rdata::<Rec>()));
+                    rec.push(r#try!(rr.read_rdata::<Rec>()));
                 }
             }
 
@@ -158,11 +158,11 @@ impl DnsResolver {
         ));
 
         let mut buf = [0; MESSAGE_LIMIT];
-        let msg = try!(self.send_message(&out_msg, &mut buf));
+        let msg = r#try!(self.send_message(&out_msg, &mut buf));
 
         for rr in msg.answer.into_iter() {
             if rr.r_type == RecordType::A {
-                let a = try!(rr.read_rdata::<A>());
+                let a = r#try!(rr.read_rdata::<A>());
                 f(a.address);
             }
         }
@@ -183,11 +183,11 @@ impl DnsResolver {
         ));
 
         let mut buf = [0; MESSAGE_LIMIT];
-        let msg = try!(self.send_message(&out_msg, &mut buf));
+        let msg = r#try!(self.send_message(&out_msg, &mut buf));
 
         for rr in msg.answer.into_iter() {
             if rr.r_type == RecordType::AAAA {
-                let aaaa = try!(rr.read_rdata::<AAAA>());
+                let aaaa = r#try!(rr.read_rdata::<AAAA>());
                 f(aaaa.address);
             }
         }
@@ -228,10 +228,10 @@ impl DnsResolver {
 
             info!("resolver sending message to {}", ns_addr);
 
-            try!(self.sock.send_message(out_msg, &ns_addr));
+            r#try!(self.sock.send_message(out_msg, &ns_addr));
 
             loop {
-                try!(self.sock.get().set_read_timeout(Some(timeout)));
+                r#try!(self.sock.get().set_read_timeout(Some(timeout)));
 
                 // The other part of the aforementioned workaround.
                 let buf = unsafe { &mut *buf_ptr };
@@ -253,7 +253,7 @@ impl DnsResolver {
                     Ok(Some(msg)) => {
                         // Ignore irrelevant messages
                         if msg.header.id == out_msg.header.id && msg.header.qr == Qr::Response {
-                            try!(msg.get_error());
+                            r#try!(msg.get_error());
                             return Ok(msg);
                         }
                     }
@@ -342,7 +342,7 @@ fn with_suffixes(host: &str, suffixes: &[String]) -> Vec<String> {
 
 /// Resolves an IPv4 or IPv6 address to a hostname.
 pub fn resolve_addr(addr: &IpAddr) -> io::Result<String> {
-    let r = try!(DnsResolver::new(try!(DnsConfig::load_default())));
+    let r = r#try!(DnsResolver::new(r#try!(DnsConfig::load_default())));
     r.resolve_addr(addr)
 }
 
@@ -362,7 +362,7 @@ pub fn resolve_addr(addr: &IpAddr) -> io::Result<String> {
 /// # }
 /// ```
 pub fn resolve_host(host: &str) -> io::Result<ResolveHost> {
-    let r = try!(DnsResolver::new(try!(DnsConfig::load_default())));
+    let r = r#try!(DnsResolver::new(r#try!(DnsConfig::load_default())));
     r.resolve_host(host)
 }
 

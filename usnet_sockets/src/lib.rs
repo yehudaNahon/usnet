@@ -27,7 +27,7 @@ pub mod system;
 pub mod usnetconfig;
 
 #[cfg(feature = "multi")]
-pub use apimultithread::{TcpListener, TcpStream, UdpSocket, UsnetToSocketAddrs};
+pub use crate::apimultithread::{TcpListener, TcpStream, UdpSocket, UsnetToSocketAddrs};
 
 #[cfg(feature = "single")]
 pub use apisinglethread::{TcpListener, TcpStream};

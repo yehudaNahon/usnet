@@ -1,6 +1,6 @@
-use devices::{EndpointDevice, ReceiveTokenImpl};
-use pkt::{extract_pkt_info, FragmentationKey, PacketInfo, Want};
-use EndpointOrControl;
+use crate::devices::{EndpointDevice, ReceiveTokenImpl};
+use crate::pkt::{extract_pkt_info, FragmentationKey, PacketInfo, Want};
+use crate::EndpointOrControl;
 
 use smoltcp::phy::PcapSink;
 use smoltcp::phy::RxToken;

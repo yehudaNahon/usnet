@@ -12,10 +12,10 @@ extern crate dotenv;
 #[cfg(feature = "netmap")]
 use devices::all_pipes;
 
-use devices::EndpointDevice;
+use crate::devices::EndpointDevice;
 
-use endpoint::Endpoint;
-use pkt::Want;
+use crate::endpoint::Endpoint;
+use crate::pkt::Want;
 
 extern crate libusnetd;
 use libusnetd::{ClientMessage, ClientMessageIp, SOCKET_PATH};

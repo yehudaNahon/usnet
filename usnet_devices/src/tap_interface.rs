@@ -8,9 +8,9 @@ use smoltcp::phy::{Device, DeviceCapabilities};
 use smoltcp::time::Instant;
 use smoltcp::Result;
 
-use tap_interface_sys;
+use crate::tap_interface_sys;
 
-use SMOLTCP_ETHERNET_HEADER;
+use crate::SMOLTCP_ETHERNET_HEADER;
 
 /// A virtual Ethernet interface.
 #[derive(Debug)]

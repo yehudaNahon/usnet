@@ -8,9 +8,9 @@ use smoltcp::phy;
 use smoltcp::phy::{Device, DeviceCapabilities};
 use smoltcp::time::Instant;
 use smoltcp::{Error, Result};
-use uds;
+use crate::uds;
 
-use SMOLTCP_ETHERNET_HEADER;
+use crate::SMOLTCP_ETHERNET_HEADER;
 
 /// A socket that captures or transmits the complete frame.
 #[derive(Debug)]

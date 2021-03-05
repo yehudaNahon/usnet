@@ -117,7 +117,7 @@ pub struct A {
 impl Record for A {
     fn decode(data: &mut MsgReader) -> Result<Self, DecodeError> {
         let mut buf = [0; 4];
-        try!(data.read(&mut buf));
+        r#try!(data.read(&mut buf));
         Ok(A {
             address: Ipv4Addr::new(buf[0], buf[1], buf[2], buf[3]),
         })
@@ -142,7 +142,7 @@ pub struct AAAA {
 impl Record for AAAA {
     fn decode(data: &mut MsgReader) -> Result<Self, DecodeError> {
         let mut buf = [0; 16];
-        try!(data.read(&mut buf));
+        r#try!(data.read(&mut buf));
         let segments: [u16; 8] = unsafe { transmute(buf) };
         Ok(AAAA {
             address: Ipv6Addr::new(
@@ -182,7 +182,7 @@ pub struct CName {
 impl Record for CName {
     fn decode(data: &mut MsgReader) -> Result<Self, DecodeError> {
         Ok(CName {
-            name: try!(data.read_name()),
+            name: r#try!(data.read_name()),
         })
     }
 
@@ -208,13 +208,13 @@ pub struct Mx {
 impl Record for Mx {
     fn decode(data: &mut MsgReader) -> Result<Self, DecodeError> {
         Ok(Mx {
-            preference: try!(data.read_u16()),
-            exchange: try!(data.read_name()),
+            preference: r#try!(data.read_u16()),
+            exchange: r#try!(data.read_name()),
         })
     }
 
     fn encode(&self, data: &mut MsgWriter) -> Result<(), EncodeError> {
-        try!(data.write_u16(self.preference));
+        r#try!(data.write_u16(self.preference));
         data.write_name(&self.exchange)
     }
 
@@ -233,7 +233,7 @@ pub struct Ns {
 impl Record for Ns {
     fn decode(data: &mut MsgReader) -> Result<Self, DecodeError> {
         Ok(Ns {
-            name: try!(data.read_name()),
+            name: r#try!(data.read_name()),
         })
     }
 
@@ -256,7 +256,7 @@ pub struct Ptr {
 impl Record for Ptr {
     fn decode(data: &mut MsgReader) -> Result<Self, DecodeError> {
         Ok(Ptr {
-            name: try!(data.read_name()),
+            name: r#try!(data.read_name()),
         })
     }
 
@@ -295,24 +295,24 @@ pub struct Soa {
 impl Record for Soa {
     fn decode(data: &mut MsgReader) -> Result<Self, DecodeError> {
         Ok(Soa {
-            mname: try!(data.read_name()),
-            rname: try!(data.read_name()),
-            serial: try!(data.read_u32()),
-            refresh: try!(data.read_u32()),
-            retry: try!(data.read_u32()),
-            expire: try!(data.read_u32()),
-            minimum: try!(data.read_u32()),
+            mname: r#try!(data.read_name()),
+            rname: r#try!(data.read_name()),
+            serial: r#try!(data.read_u32()),
+            refresh: r#try!(data.read_u32()),
+            retry: r#try!(data.read_u32()),
+            expire: r#try!(data.read_u32()),
+            minimum: r#try!(data.read_u32()),
         })
     }
 
     fn encode(&self, data: &mut MsgWriter) -> Result<(), EncodeError> {
-        try!(data.write_name(&self.mname));
-        try!(data.write_name(&self.rname));
-        try!(data.write_u32(self.serial));
-        try!(data.write_u32(self.refresh));
-        try!(data.write_u32(self.retry));
-        try!(data.write_u32(self.expire));
-        try!(data.write_u32(self.minimum));
+        r#try!(data.write_name(&self.mname));
+        r#try!(data.write_name(&self.rname));
+        r#try!(data.write_u32(self.serial));
+        r#try!(data.write_u32(self.refresh));
+        r#try!(data.write_u32(self.retry));
+        r#try!(data.write_u32(self.expire));
+        r#try!(data.write_u32(self.minimum));
         Ok(())
     }
 
@@ -337,18 +337,18 @@ pub struct Srv {
 impl Record for Srv {
     fn decode(data: &mut MsgReader) -> Result<Self, DecodeError> {
         Ok(Srv {
-            priority: try!(data.read_u16()),
-            weight: try!(data.read_u16()),
-            port: try!(data.read_u16()),
-            target: try!(data.read_name()),
+            priority: r#try!(data.read_u16()),
+            weight: r#try!(data.read_u16()),
+            port: r#try!(data.read_u16()),
+            target: r#try!(data.read_name()),
         })
     }
 
     fn encode(&self, data: &mut MsgWriter) -> Result<(), EncodeError> {
-        try!(data.write_u16(self.priority));
-        try!(data.write_u16(self.weight));
-        try!(data.write_u16(self.port));
-        try!(data.write_name(&self.target));
+        r#try!(data.write_u16(self.priority));
+        r#try!(data.write_u16(self.weight));
+        r#try!(data.write_u16(self.port));
+        r#try!(data.write_name(&self.target));
         Ok(())
     }
 
@@ -367,7 +367,7 @@ pub struct Txt {
 impl Record for Txt {
     fn decode(data: &mut MsgReader) -> Result<Self, DecodeError> {
         Ok(Txt {
-            data: try!(data.read_character_string()),
+            data: r#try!(data.read_character_string()),
         })
     }
 

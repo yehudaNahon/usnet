@@ -26,11 +26,11 @@ use nix::sys::uio::IoVec;
 use nix::unistd::{gettid, getuid};
 use std::os::unix::io::FromRawFd;
 
-use device::*;
+use crate::device::*;
 use std::fs;
 use std::io::prelude::*;
 use std::process::Command;
-use system::*;
+use crate::system::*;
 
 #[cfg(feature = "netmap")]
 use std::mem;
