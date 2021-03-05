@@ -25,7 +25,7 @@ impl DnsSocket {
     /// Returns a `DnsSocket`, bound to the given address.
     pub fn bind<A: UsnetToSocketAddrs>(addr: A) -> io::Result<DnsSocket> {
         Ok(DnsSocket {
-            sock: r#try!(UdpSocket::bind(addr)),
+            sock: UdpSocket::bind(addr)?,
         })
     }
 
@@ -41,8 +41,8 @@ impl DnsSocket {
         addr: A,
     ) -> Result<(), Error> {
         let mut buf = [0; MESSAGE_LIMIT];
-        let data = r#try!(message.encode(&mut buf));
-        r#try!(self.sock.send_to(data, addr));
+        let data = message.encode(&mut buf)?;
+        self.sock.send_to(data, addr)?;
         Ok(())
     }
 
@@ -54,9 +54,9 @@ impl DnsSocket {
         &self,
         buf: &'buf mut [u8],
     ) -> Result<(Message<'buf>, SocketAddr), Error> {
-        let (n, addr) = r#try!(self.sock.recv_from(buf));
+        let (n, addr) = self.sock.recv_from(buf)?;
 
-        let msg = r#try!(Message::decode(&buf[..n]));
+        let msg = Message::decode(&buf[..n])?;
         Ok((msg, addr))
     }
 
@@ -70,12 +70,12 @@ impl DnsSocket {
         addr: &SocketAddr,
         buf: &'buf mut [u8],
     ) -> Result<Option<Message<'buf>>, Error> {
-        let (n, recv_addr) = r#try!(self.sock.recv_from(buf));
+        let (n, recv_addr) = self.sock.recv_from(buf)?;
 
         if !socket_address_equal(&recv_addr, addr) {
             Ok(None)
         } else {
-            let msg = r#try!(Message::decode(&buf[..n]));
+            let msg = Message::decode(&buf[..n])?;
             Ok(Some(msg))
         }
     }
