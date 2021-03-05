@@ -82,10 +82,10 @@ fn host_file_impl() -> PathBuf {
 /// If an error is encountered in opening the file or reading its contents
 /// or if the file is malformed, the error is returned.
 pub fn load_hosts(path: &Path) -> io::Result<HostTable> {
-    let mut f = try!(File::open(path));
+    let mut f = r#try!(File::open(path));
     let mut buf = String::new();
 
-    try!(f.read_to_string(&mut buf));
+    r#try!(f.read_to_string(&mut buf));
     parse_host_table(&buf)
 }
 
