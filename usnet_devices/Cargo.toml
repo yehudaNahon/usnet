@@ -1,0 +1,14 @@
+[package]
+authors = ["Kai Lüke <kailueke@riseup.net>"]
+license = "MIT"
+name = "usnet_devices"
+version = "0.1.0"
+
+[dependencies]
+libc = "*"
+netmap_sys = {version = "0.1.4", features = ["netmap_with_libs"], optional = true}
+smoltcp = "0.7"
+
+[features]
+default = []
+netmap = ["netmap_sys"]

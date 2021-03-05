@@ -1,5 +1,6 @@
 [workspace]
 members = [
-  "stacked_client",
-  "stacked_server",
+  "usnet_sockets",
+  "usnetd",
+  "usnet_devices",
 ]

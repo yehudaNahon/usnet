@@ -1,0 +1,28 @@
+[package]
+authors = ["Kai Lüke <kailueke@riseup.net>"]
+license = "MIT"
+name = "usnet_sockets"
+version = "0.1.0"
+
+[dependencies]
+idna = "0.1"
+lazy_static = "1.1.0"
+libc = "*"
+log = {version = "0.4.0", features = ["release_max_level_debug"]}
+nix = "0.11.0"
+parking_lot = "0.6"
+rand = "0.4.2"
+serde = "1.0.53"
+serde_derive = "1.0.53"
+serde_json = "1.0.17"
+smoltcp = "0.7"
+usnet_devices = {path = "../usnet_devices"}
+usnetd = {path = "../usnetd"}
+
+[features]
+default = ["multi"]
+netmap = ["usnet_devices/netmap"]
+
+host = []
+multi = []
+single = []
