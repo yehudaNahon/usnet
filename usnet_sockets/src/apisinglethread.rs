@@ -24,7 +24,7 @@ use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr, ToSocketAddrs};
 
 use std::net::{TcpListener as SystemTcpListener, TcpStream as SystemTcpStream};
 
-use nix::poll::{poll, EventFlags, PollFd};
+use nix::poll::{poll, PollFd, PollFlags};
 use std::os::raw::c_int;
 
 use device::*;
@@ -118,12 +118,12 @@ impl StcpNet {
         self.sockets.add(tcp_socket)
     }
     pub fn poll_wait(&mut self, once: bool, poll_other: Option<&[RawFd]>) {
-        let mut fds = vec![PollFd::new(self.fd, EventFlags::POLLIN)];
+        let mut fds = vec![PollFd::new(self.fd, PollFlags::POLLIN)];
         if let Some(poll_others) = poll_other {
             fds.extend(
                 poll_others
                     .iter()
-                    .map(|fd| PollFd::new(*fd, EventFlags::POLLIN)),
+                    .map(|fd| PollFd::new(*fd, PollFlags::POLLIN)),
             );
         }
         while !match self.iface.poll(&mut self.sockets, Instant::now()) {
@@ -135,7 +135,7 @@ impl StcpNet {
                 let others = poll_other.is_some()
                     && fds[1..]
                         .iter()
-                        .filter(|o| o.revents() == Some(EventFlags::POLLIN))
+                        .filter(|o| o.revents() == Some(PollFlags::POLLIN))
                         .next()
                         .is_some();
                 r || others
@@ -190,7 +190,7 @@ impl StcpNetRef {
                 }
                 _ => {
                     if sockaddr.port() == 0 {
-                        let local_port: u16 = 1u16 + thread_rng().gen_range(1024, std::u16::MAX);
+                        let local_port: u16 = 1u16 + thread_rng().gen_range(1024..std::u16::MAX);
                         sockaddr.set_port(local_port);
                     }
                 }
@@ -251,7 +251,7 @@ impl StcpNetRef {
         {
             let mut stcpnet = self.r.borrow_mut();
 
-            let mut local_port: u16 = 1u16 + thread_rng().gen_range(1024, std::u16::MAX);
+            let mut local_port: u16 = 1u16 + thread_rng().gen_range(1024..std::u16::MAX);
 
             let ipv4 = stcpnet.iface.ips()[0].address();
             match stcpnet.iface.control() {

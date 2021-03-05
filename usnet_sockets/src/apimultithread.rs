@@ -36,7 +36,7 @@ use std::net::{
 };
 use std::os::unix::net::UnixDatagram;
 
-use nix::poll::{poll, EventFlags, PollFd};
+use nix::poll::{poll, PollFd, PollFlags};
 use nix::sched::{sched_setaffinity, CpuSet};
 use nix::unistd::Pid;
 use std::os::raw::c_int;
@@ -111,15 +111,15 @@ pub fn bg() {
                 fds.clear();
             }
             if fds.is_empty() {
-                fds.push(PollFd::new(stcpnet.fd, EventFlags::POLLIN));
+                fds.push(PollFd::new(stcpnet.fd, PollFlags::POLLIN));
                 fds.push(PollFd::new(
                     stcpnet.notify_poll_listener.as_raw_fd(),
-                    EventFlags::POLLIN,
+                    PollFlags::POLLIN,
                 ));
                 fds.extend(
                     fds_extra
                         .iter()
-                        .map(|fd| PollFd::new(*fd, EventFlags::POLLIN)),
+                        .map(|fd| PollFd::new(*fd, PollFlags::POLLIN)),
                 );
             }
 
@@ -297,7 +297,7 @@ impl StcpNetRef {
                 let find_random = sockaddr.port() == 0;
                 while lo_result.is_err() && (usnet_result.is_err() || sockaddr.ip().is_loopback()) {
                     if find_random {
-                        let local_port: u16 = 1u16 + thread_rng().gen_range(1024, std::u16::MAX);
+                        let local_port: u16 = 1u16 + thread_rng().gen_range(1024..std::u16::MAX);
                         sockaddr.set_port(local_port);
                     }
                     let mut loaddr = sockaddr.clone();
@@ -413,7 +413,7 @@ impl StcpNetRef {
 
                 let mut local_port: u16;
                 loop {
-                    local_port = 1u16 + thread_rng().gen_range(1024, std::u16::MAX);
+                    local_port = 1u16 + thread_rng().gen_range(1024..std::u16::MAX);
                     let (lower, upper) = stcpnet.kernel_local_port_range;
                     if local_port >= lower && local_port <= upper {
                         continue;
@@ -520,7 +520,7 @@ impl StcpNetRef {
                 let find_random = sockaddr.port() == 0;
                 while lo_result.is_err() && (usnet_result.is_err() || sockaddr.ip().is_loopback()) {
                     if find_random {
-                        let local_port: u16 = 1u16 + thread_rng().gen_range(1024, std::u16::MAX);
+                        let local_port: u16 = 1u16 + thread_rng().gen_range(1024..std::u16::MAX);
                         sockaddr.set_port(local_port);
                     }
                     let mut loaddr = sockaddr.clone();

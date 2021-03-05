@@ -20,7 +20,8 @@ use smoltcp::wire::{EthernetAddress, IpAddress, IpCidr, IpProtocol, Ipv4Address}
 use std::os::unix::net::UnixDatagram;
 
 use libc;
-use nix::sys::socket::{recvmsg, CmsgSpace, ControlMessage, MsgFlags, SockAddr};
+use nix::cmsg_space;
+use nix::sys::socket::{recvmsg, ControlMessageOwned, MsgFlags, SockAddr};
 use nix::sys::uio::IoVec;
 use nix::unistd::{gettid, getuid};
 use std::os::unix::io::FromRawFd;
@@ -484,7 +485,7 @@ impl StcpBackend {
                     // receive response
                     let mut buf = [0u8; 1];
                     let iov = [IoVec::from_mut_slice(&mut buf[..])];
-                    let mut cmsgspace: CmsgSpace<[RawFd; 1]> = CmsgSpace::new();
+                    let mut cmsgspace = cmsg_space!([RawFd; 1]);
                     let msg = recvmsg(
                         control_uds.as_raw_fd(),
                         &iov,
@@ -494,7 +495,7 @@ impl StcpBackend {
                     .unwrap();
                     let mut received_fd: Option<RawFd> = None;
                     for cmsg in msg.cmsgs() {
-                        if let ControlMessage::ScmRights(fd) = cmsg {
+                        if let ControlMessageOwned::ScmRights(fd) = cmsg {
                             assert_eq!(received_fd, None);
                             assert_eq!(fd.len(), 1);
                             received_fd = Some(fd[0]);
@@ -600,7 +601,7 @@ impl StcpBackend {
                     // receive response
                     let mut buf = [0u8; mem::size_of::<nmreq>()];
                     let iov = [IoVec::from_mut_slice(&mut buf[..])];
-                    let mut cmsgspace: CmsgSpace<[RawFd; 1]> = CmsgSpace::new();
+                    let mut cmsgspace: cmsg_space!([RawFd; 1]);
                     let msg = recvmsg(
                         control_uds.as_raw_fd(),
                         &iov,
@@ -613,7 +614,7 @@ impl StcpBackend {
                     };
                     let mut received_fd: Option<RawFd> = None;
                     for cmsg in msg.cmsgs() {
-                        if let ControlMessage::ScmRights(fd) = cmsg {
+                        if let ControlMessageOwned::ScmRights(fd) = cmsg {
                             assert_eq!(received_fd, None);
                             assert_eq!(fd.len(), 1);
                             received_fd = Some(fd[0]);
